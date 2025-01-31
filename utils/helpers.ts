@@ -23,14 +23,19 @@ export const getURL = (path: string = '') => {
   const pathUrl = path ? `${url}/${path}` : url;
   return pathUrl;
 };
-type MappedData = Record<string, any>;
+export type MappedData = {
+  [key: string]: any;
+  data: any;
+};
 
 export const mapDataToColumns = (
   data: any[],
   columns: Column[]
 ): MappedData[] => {
   return data.map((item) => {
-    const mappedItem: MappedData = {};
+    const mappedItem: MappedData = {
+      data: item,
+    };
 
     columns.forEach((column) => {
       const { key, type } = column;
@@ -45,8 +50,16 @@ export const mapDataToColumns = (
         // Assign other keys directly
         mappedItem[key] = item[key as keyof typeof item] || null;
       }
+      if (key == 'credits') {
+        mappedItem['credits'] = item?.profiles?.credits || null;
+      }
     });
-
     return mappedItem;
   });
+};
+
+export const getDataFromFormData = (formData: FormData) => {
+  const entries = formData.entries();
+  const rawData = Object.fromEntries(entries) as Record<string, any>;
+  return rawData;
 };
