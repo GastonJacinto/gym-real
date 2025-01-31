@@ -24,7 +24,7 @@ interface CustomModalProps {
   onOpenChange: (open: boolean) => void;
   title: string;
   description: string;
-  confirmFn: () => Promise<void>;
+  confirmFn: any;
   variant?: Variant;
   icon?: React.ReactNode;
   confirmText?: string;
@@ -87,7 +87,7 @@ export function CustomModal({
           </div>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="border-t pt-6 mt-4">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}

@@ -39,6 +39,47 @@ export type Database = {
         };
         Relationships: [];
       };
+      plans: {
+        Row: {
+          created_at: string;
+          description: string;
+          features: string[];
+          id: string;
+          price: number;
+          title: string;
+          updated_at: string | null;
+          updated_by: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          description?: string;
+          features?: string;
+          id?: string;
+          price?: number;
+          title?: string | null;
+          updated_at?: string | null;
+          updated_by?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          description?: string;
+          features?: string;
+          id?: string;
+          price?: number;
+          title?: string | null;
+          updated_at?: string | null;
+          updated_by?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'plans_updated_by_fkey';
+            columns: ['updated_by'];
+            isOneToOne: false;
+            referencedRelation: 'managers';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       profiles: {
         Row: {
           avatar_url: string | null;
@@ -65,7 +106,7 @@ export type Database = {
           {
             foreignKeyName: 'profiles_user_id_fkey';
             columns: ['user_id'];
-            isOneToOne: false;
+            isOneToOne: true;
             referencedRelation: 'users';
             referencedColumns: ['id'];
           },
@@ -74,33 +115,42 @@ export type Database = {
       users: {
         Row: {
           created_at: string;
+          deleted: boolean;
+          deleted_at: string | null;
           dni: number | null;
           email: string | null;
           first_name: string | null;
           id: string;
           last_name: string | null;
           phone: string | null;
-          profile_id: string | null;
+          role: Database['public']['Enums']['ROLE'];
+          updated_at: string | null;
         };
         Insert: {
           created_at?: string;
+          deleted?: boolean;
+          deleted_at?: string | null;
           dni?: number | null;
           email?: string | null;
           first_name?: string | null;
           id?: string;
           last_name?: string | null;
           phone?: string | null;
-          profile_id?: string | null;
+          role?: Database['public']['Enums']['ROLE'];
+          updated_at?: string | null;
         };
         Update: {
           created_at?: string;
+          deleted?: boolean;
+          deleted_at?: string | null;
           dni?: number | null;
           email?: string | null;
           first_name?: string | null;
           id?: string;
           last_name?: string | null;
           phone?: string | null;
-          profile_id?: string | null;
+          role?: Database['public']['Enums']['ROLE'];
+          updated_at?: string | null;
         };
         Relationships: [];
       };
@@ -112,7 +162,7 @@ export type Database = {
       [_ in never]: never;
     };
     Enums: {
-      ROLE: 'MANAGER' | 'ADMIN';
+      ROLE: 'MANAGER' | 'ADMIN' | 'USER';
     };
     CompositeTypes: {
       [_ in never]: never;

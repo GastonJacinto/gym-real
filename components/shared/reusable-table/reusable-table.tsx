@@ -1,7 +1,7 @@
 'use client';
 import type React from 'react';
 import { useState, useMemo } from 'react';
-import type { ReusableTableProps } from '../types/table';
+import type { ReusableTableProps } from '../../../types/table';
 import {
   Table,
   TableBody,
@@ -11,10 +11,17 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { RefreshCw } from 'lucide-react';
-import { Avatar } from './Avatar';
-import { SearchInput } from './SearchInput';
-import { ellipsis } from '@/public';
+import { MoreHorizontal, RefreshCw } from 'lucide-react';
+import { SearchInput } from '../../SearchInput';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../../ui/dropdown-menu';
+import { Avatar } from '@/components/avatar';
+import { RoleSelector } from './components';
+import { Roles } from '@/types/db-types';
 
 export const ReusableTable: React.FC<ReusableTableProps> = ({
   columns,
@@ -77,6 +84,8 @@ export const ReusableTable: React.FC<ReusableTableProps> = ({
                         name={item[column.key]}
                         email={item.email}
                       />
+                    ) : column.key == 'role' ? (
+                      <RoleSelector role={item[column.key] as Roles} />
                     ) : (
                       item[column.key]
                     )}
@@ -84,18 +93,32 @@ export const ReusableTable: React.FC<ReusableTableProps> = ({
                 ))}
                 {actions.length > 0 && (
                   <TableCell>
-                    <div className="flex space-x-2">
-                      {actions.map((action, actionIndex) => (
-                        <Button
-                          key={actionIndex}
-                          onClick={() => action.onClick(item)}
-                          variant="ghost"
-                          size="sm"
-                        >
-                          {action.label}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
                         </Button>
-                      ))}
-                    </div>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="start">
+                        {actions.map((action, actionIndex) => (
+                          <DropdownMenuItem
+                            key={actionIndex}
+                            onClick={() => action.onClick(item)}
+                            className={
+                              action.type === 'delete'
+                                ? 'text-red-600 cursor-pointer gap-x-2'
+                                : 'cursor-pointer gap-x-2'
+                            }
+                          >
+                            {action.icon && (
+                              <action.icon className="mr-2 h-4 w-4" />
+                            )}
+                            {action.label}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 )}
               </TableRow>

@@ -35,7 +35,6 @@ export default async function DashboardLayout({
   const { data: usersData } = await supabase
     .from('users')
     .select('*, profiles(*)');
-
   return (
     <AdminPanelLayout managerData={managerData} usersData={usersData}>
       {children}

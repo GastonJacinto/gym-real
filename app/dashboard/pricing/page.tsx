@@ -23,7 +23,9 @@ export default async function DashboardPage({
     return redirect('/sign-in');
   }
 
-  const { data: plans } = await supabase.from('plans').select();
-  console.log(plans);
+  const { data: plans } = await supabase
+    .from('plans')
+    .select()
+    .order('price', { ascending: true });
   return <PrincingDashboard plansData={plans} />;
 }

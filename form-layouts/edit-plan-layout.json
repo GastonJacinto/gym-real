@@ -1,0 +1,46 @@
+[
+  {
+    "fields": [
+      [
+        {
+          "name": "title",
+          "type": "text",
+          "fieldType": "Input",
+          "placeholder": "Título del plan",
+          "label": "Título del plan",
+          "required": true
+        },
+        {
+          "name": "price",
+          "type": "number",
+          "icon": "DollarSign",
+          "fieldType": "Input",
+
+          "placeholder": "Precio del plan",
+          "label": "Precio",
+          "required": true
+        }
+      ],
+      {
+        "name": "description",
+        "icon": "DollarSign",
+        "fieldType": "Input",
+        "type": "text",
+        "placeholder": "Descripción del plan",
+        "label": "Descripción del plan",
+        "required": true
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "name": "features",
+        "type": "features",
+        "placeholder": "",
+        "label": "Características del plan",
+        "required": true
+      }
+    ]
+  }
+]

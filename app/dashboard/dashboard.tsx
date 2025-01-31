@@ -10,6 +10,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
 import ActivityCard from '@/components/ui/dashboard/activity-card';
 import GeneralInfoCard from '@/components/ui/dashboard/general-info-card';
 import WeeklyClassAttendanceCard from '@/components/ui/dashboard/weekly-class-atendance';
@@ -98,7 +99,6 @@ export default function GeneralDashboard({
       icon: Activity,
     },
   ];
-
   return (
     <ContentLayout title="Dashboard">
       <CustomBreadcrum
