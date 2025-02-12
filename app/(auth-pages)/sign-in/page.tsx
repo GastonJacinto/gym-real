@@ -1,52 +1,12 @@
-'use client';
-import Link from 'next/link';
-import { handleRequestFn } from '@/utils/auth-helpers/client';
-import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
-// import OauthSignIn from './OauthSignIn';
-import AuthForm from '@/components/ui/auth/auth-form';
-import { getURL } from '@/utils/helpers';
-import signin_layout from '@/form-layouts/signin-layout.json';
-import OauthSignIn from '@/components/ui/auth/oauth';
-import { signInWithPassword } from '@/utils/auth-helpers/server';
-// Define prop type with allowEmail boolean
-interface PasswordSignInProps {
-  allowEmail: boolean;
-  redirectMethod: string;
-}
+import { redirect } from 'next/navigation';
+import { getDefaultSignInView } from '@/utils/auth-helpers/settings';
+import { cookies } from 'next/headers';
 
-export default function PasswordSignIn({
-  allowEmail,
-  redirectMethod = 'client',
-}: PasswordSignInProps) {
-  const router = redirectMethod === 'client' ? useRouter() : null;
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default async function SignIn() {
+  const cookiesO = await cookies();
+  const preferredSignInView =
+    cookiesO.get('preferredSignInView')?.value || null;
+  const defaultView = getDefaultSignInView(preferredSignInView);
 
-  const handleSubmit = async (formData: FormData) => {
-    setIsSubmitting(true); // Disable the button while the request is being handled
-    await handleRequestFn(formData, signInWithPassword, router);
-    setIsSubmitting(false);
-  };
-
-  return (
-    <div className="space-y-4">
-      <AuthForm
-        layout={signin_layout}
-        saveFn={() => {}}
-        submitButton={'Login'}
-        view={'signin'}
-        completeFn={handleSubmit}
-        base={{}}
-        lang="en"
-      />
-      <div className="divider ">o</div>
-      <OauthSignIn action={'Sign in'} />
-      <h3 className="font-semibold text-xs text-center">
-        Aún no tienes una cuenta?{' '}
-        <Link className="text-blue-500" href={getURL('/sign-up')}>
-          Registrarme
-        </Link>
-      </h3>
-    </div>
-  );
+  return redirect(`/sign-in/${defaultView}`);
 }

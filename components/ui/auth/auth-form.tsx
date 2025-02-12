@@ -141,7 +141,7 @@ export default function AuthForm({
                     <>
                       <Link
                         className=" text-xs text-end text-blue-500"
-                        href={getURL('/forgot-password')}
+                        href={getURL('/sign-in/forgot-password')}
                       >
                         Forgot your password?
                       </Link>

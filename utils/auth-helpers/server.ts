@@ -48,7 +48,7 @@ export async function signInWithEmail(formData: FormData) {
 
   if (!isValidEmail(email)) {
     redirectPath = getErrorRedirect(
-      '/signin/email_signin',
+      '/sign-in/email-signin',
       'Invalid email address.',
       'Please try again.'
     );
@@ -70,21 +70,21 @@ export async function signInWithEmail(formData: FormData) {
 
   if (error) {
     redirectPath = getErrorRedirect(
-      '/signin/email_signin',
+      '/sign-in/email-signin',
       'You could not be signed in.',
       error.message
     );
   } else if (data) {
-    cookieStore.set('preferredSignInView', 'email_signin', { path: '/' });
+    cookieStore.set('preferredSignInView', 'email-signin', { path: '/' });
     redirectPath = getStatusRedirect(
-      '/signin/email_signin',
+      '/sign-in/email-signin',
       'Success!',
       'Please check your email for a magic link. You may now close this tab.',
       true
     );
   } else {
     redirectPath = getErrorRedirect(
-      '/signin/email_signin',
+      '/sign-in/email-signin',
       'Hmm... Something went wrong.',
       'You could not be signed in.'
     );
@@ -109,16 +109,16 @@ export async function requestPasswordUpdate(formData: FormData) {
 
   if (error) {
     redirectPath = getErrorRedirect(
-      '/signin/forgot_password',
+      '/sign-in/forgot-password',
       error.message,
       'Please try again.'
     );
   } else if (data) {
     redirectPath =
-      '/signin/forgot_password?complete=true&message=Check your email for a password reset link. You may now close this tab.';
+      '/sign-in/forgot-password?complete=true&message=Check your email for a password reset link. You may now close this tab.';
   } else {
     redirectPath = getErrorRedirect(
-      '/signin/forgot_password',
+      '/signin/forgot-password',
       'Hmm... Something went wrong.',
       'Password reset email could not be sent.'
     );
@@ -140,53 +140,20 @@ export async function signInWithPassword(formData: FormData) {
   console.log(data);
   if (error) {
     redirectPath = getErrorRedirect(
-      '/sign-in',
-      'Sign in failed.',
+      '/sign-in/password-signin',
+      'Error',
       error.message
     );
   } else if (data.user) {
-    cookieStore.set('preferredSignInView', 'password_signin', { path: '/' });
+    cookieStore.set('preferredSignInView', 'password-signin', { path: '/' });
     redirectPath = getStatusRedirect(
       '/dashboard',
-      'Success!',
-      'You are now signed in.'
+      'Bienvenido!',
+      'Iniciaste sesión con éxito.'
     );
-    // const { data: xref } = await supabase
-    //   .from('manager_owner_xref')
-    //   .select('manager')
-    //   .eq('user', data.user.id)
-    //   .single();
-
-    // const { data: manager } = await supabase
-    //   .from('managers')
-    //   .select()
-    //   .eq('id', xref?.manager)
-    //   .single();
-
-    // if (manager) {
-    //   redirectPath = getStatusRedirect(
-    //     '/manage/' + manager.slug,
-    //     'Success!',
-    //     'You are now signed in.'
-    //   );
-    // } else {
-    //   const { data: user } = await supabase
-    //     .from('users')
-    //     .select()
-    //     .eq('id', data.user.id)
-    //     .single();
-
-    //   if (user?.role == 'ADMIN') {
-    //     redirectPath = getStatusRedirect(
-    //       '/rentscape',
-    //       'Success!',
-    //       'You are now signed in.'
-    //     );
-    //   }
-    // }
   } else {
     redirectPath = getErrorRedirect(
-      '/signin/password_signin',
+      '/signin/password-signin',
       'Hmm... Something went wrong.',
       'You could not be signed in.'
     );
@@ -219,7 +186,9 @@ export async function checkSlug(slug: string) {
 }
 
 export async function signUp(formData: FormData) {
-  const callbackURL = getURL('/sign-in');
+  const callbackURL = getURL(
+    '/sign-in/password-signin?status=Tu cuenta ha sido verificada correctamente, ya puedes iniciar sesión.'
+  );
   const values = JSON.parse((formData.get('values') as string) || '{}');
 
   const { phone, first_name, last_name, email, password, dni } = values;
@@ -240,11 +209,7 @@ export async function signUp(formData: FormData) {
   });
   let redirectPath: string = '';
   if (error) {
-    redirectPath = getErrorRedirect(
-      '/signin/signup',
-      'Sign up failed.',
-      error.message
-    );
+    redirectPath = getErrorRedirect('/sign-in/sign-up', 'Error', error.message);
   } else if (data.session) {
     const { data: user } = await supabase
       .from('users')
@@ -276,9 +241,9 @@ export async function signUp(formData: FormData) {
     data.user.identities.length == 0
   ) {
     redirectPath = getErrorRedirect(
-      '/signin/signup',
-      'Sign up failed.',
-      'There is already an account associated with this email address. Try resetting your password.'
+      '/sign-in/sign-up',
+      'Error',
+      'Ya existe una cuenta asociada a este correo. Si no recuerdas tu contraseña, puedes restablecerla.'
     );
   } else if (data.user) {
     const user_id = data.user.id;
@@ -296,12 +261,12 @@ export async function signUp(formData: FormData) {
       user_id,
     });
     redirectPath =
-      '/profile?complete=true&message=Check your email for a confirmation link to enter the platform, and get ready to level up your property management.';
+      '/sign-in/sign-up?complete=true&message=¡Estás a un paso de transformar la gestión de tu gimnasio! Hemos enviado un correo de confirmación, revisa tu bandeja de entrada y actívala para comenzar.';
   } else {
     redirectPath = getErrorRedirect(
-      '/signin/signup',
-      'Hmm... Something went wrong.',
-      'You could not be signed up.'
+      '/sign-in/sign-up',
+      'Hmm... Algo salió mal.',
+      'No pudimos registrarte, por favor intenta de nuevo.'
     );
   }
 

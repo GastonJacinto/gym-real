@@ -8,38 +8,27 @@ import { signUp } from '@/utils/auth-helpers/server';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import sign_up_layout from '@/form-layouts/sign-up-layout.json';
-interface SignupProps {
+interface SignUpProps {
   allowEmail: boolean;
   redirectMethod: string;
 }
 
-export default function PasswordSignIn({
-  allowEmail,
-  redirectMethod,
-}: SignupProps) {
+export default function SignUp({ allowEmail, redirectMethod }: SignUpProps) {
   const router = redirectMethod === 'client' ? useRouter() : null;
 
-  // const searchParams = await props.searchParams;
-  // if ("message" in searchParams) {
-  //   return (
-  //     <div className="w-full flex-1 flex items-center h-screen sm:max-w-md justify-center gap-2 p-4">
-  //       <FormMessage message={searchParams} />
-  //     </div>
-  //   );
-  // }
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const handleSubmit = async (formData: FormData) => {
-    setIsSubmitting(true); // Disable the button while the request is being handled
     await handleRequestFn(formData, signUp, router);
-    setIsSubmitting(false);
+  };
+  const saveFn = async (formData: FormData) => {
+    //This is to simulate a save function that takes time.
+    await new Promise((resolve) => setTimeout(resolve, 500));
   };
   return (
     <>
       <div className="space-y-4">
         <AuthForm
           layout={sign_up_layout}
-          saveFn={() => {}}
+          saveFn={saveFn}
           submitButton={'Registrarse'}
           view={'signup'}
           completeFn={handleSubmit}
@@ -50,7 +39,10 @@ export default function PasswordSignIn({
         <OauthSignIn action={'Sign up'} />
         <h3 className="font-semibold text-xs text-center">
           Ya tienes una cuenta?{' '}
-          <Link className="text-blue-500" href={getURL('/sign-in')}>
+          <Link
+            className="text-blue-500"
+            href={getURL('/sign-in/password-signin')}
+          >
             Iniciar sesión
           </Link>
         </h3>

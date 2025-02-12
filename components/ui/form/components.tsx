@@ -354,7 +354,7 @@ export const errorMessage = ({
   if (!errorText) return null;
 
   return (
-    <div className="text-red-500 flex items-center gap-1 mt-1 text-sm">
+    <div className="text-destructive dark:text-destructive flex items-center gap-1 mt-1 text-sm">
       <CircleAlert className="text-destructive w-4 h-4" />
       <span>{errorText}</span>
     </div>

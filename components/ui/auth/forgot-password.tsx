@@ -16,13 +16,10 @@ export default function ForgotPassword({
   allowEmail,
   redirectMethod,
 }: ForgotPasswordProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = redirectMethod === 'client' ? useRouter() : null;
 
   const handleSubmit = async (formData: FormData) => {
-    setIsSubmitting(true); // Disable the button while the request is being handled
     await handleRequestFn(formData, requestPasswordUpdate, router);
-    setIsSubmitting(false);
   };
   return (
     <>
@@ -39,7 +36,10 @@ export default function ForgotPassword({
           <div className="divider ">o</div>
           <h3 className="font-semibold text-xs text-center">
             Ya tienes una cuenta?{' '}
-            <Link className="text-blue-500" href={getURL('/sign-in')}>
+            <Link
+              className="text-blue-500"
+              href={getURL('/sign-in/password-signin')}
+            >
               Iniciar sesión
             </Link>
           </h3>

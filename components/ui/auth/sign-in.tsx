@@ -11,21 +11,18 @@ import OauthSignIn from '@/components/ui/auth/oauth';
 import { signInWithPassword } from '@/utils/auth-helpers/server';
 // Define prop type with allowEmail boolean
 interface PasswordSignInProps {
-  allowEmail: boolean;
+  allowPassword: boolean;
   redirectMethod: string;
 }
 
 export default function PasswordSignIn({
-  allowEmail,
+  allowPassword,
   redirectMethod = 'client',
 }: PasswordSignInProps) {
   const router = redirectMethod === 'client' ? useRouter() : null;
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (formData: FormData) => {
-    setIsSubmitting(true); // Disable the button while the request is being handled
     await handleRequestFn(formData, signInWithPassword, router);
-    setIsSubmitting(false);
   };
 
   return (
@@ -43,7 +40,7 @@ export default function PasswordSignIn({
       <OauthSignIn action={'Sign in'} />
       <h3 className="font-semibold text-xs text-center">
         Aún no tienes una cuenta?{' '}
-        <Link className="text-blue-500" href={getURL('/sign-up')}>
+        <Link className="text-blue-500" href={getURL('/sign-in/sign-up')}>
           Registrarme
         </Link>
       </h3>

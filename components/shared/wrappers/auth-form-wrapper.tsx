@@ -6,11 +6,11 @@ import React from 'react';
 type Props = {
   children: React.ReactNode;
   bgImage: string;
+  title: string;
 };
 
-export default function AuthFormLayout({ children, bgImage }: Props) {
+export default function AuthFormLayout({ children, bgImage, title }: Props) {
   const path = usePathname();
-  const title = getTitle(path);
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 p-6 md:p-10">
@@ -39,16 +39,3 @@ export default function AuthFormLayout({ children, bgImage }: Props) {
     </div>
   );
 }
-
-const getTitle = (path: string) => {
-  switch (path) {
-    case '/sign-in':
-      return 'Iniciar Sesión';
-    case '/sign-up':
-      return 'Registrarme';
-    case '/forgot-password':
-      return 'Recuperar Contraseña';
-    default:
-      return 'Cambiar Contrase{a';
-  }
-};
