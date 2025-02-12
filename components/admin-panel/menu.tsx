@@ -1,20 +1,25 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { Ellipsis, LogOut } from "lucide-react";
-import { usePathname } from "next/navigation";
+import Link from 'next/link';
+import { Ellipsis, LogOut } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 
-import { cn } from "@/lib/utils";
-import { getMenuList } from "@/lib/menu-list";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { CollapseMenuButton } from "@/components/admin-panel/collapse-menu-button";
+import { cn } from '@/lib/utils';
+import { getMenuList } from '@/lib/menu-list';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { CollapseMenuButton } from '@/components/admin-panel/collapse-menu-button';
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-  TooltipProvider
-} from "@/components/ui/tooltip";
+  TooltipProvider,
+} from '@/components/ui/tooltip';
+import { createClient } from '@/utils/supabase/client';
+import { getURL } from '@/utils/helpers';
+import { Manager, User } from '@/types/db-types';
+import { useUserStore } from '@/stores/user-store';
+import { useManagerStore } from '@/stores/manager-store';
 
 interface MenuProps {
   isOpen: boolean | undefined;
@@ -23,13 +28,14 @@ interface MenuProps {
 export function Menu({ isOpen }: MenuProps) {
   const pathname = usePathname();
   const menuList = getMenuList(pathname);
-
+  const user = useUserStore((state) => state.user);
+  const manager = useManagerStore((state) => state.manager);
   return (
     <ScrollArea className="[&>div>div[style]]:!block">
       <nav className="mt-8 h-full w-full">
         <ul className="flex flex-col min-h-[calc(100vh-48px-36px-16px-32px)] lg:min-h-[calc(100vh-32px-40px-32px)] items-start space-y-1 px-2">
           {menuList.map(({ groupLabel, menus }, index) => (
-            <li className={cn("w-full", groupLabel ? "pt-5" : "")} key={index}>
+            <li className={cn('w-full', groupLabel ? 'pt-5' : '')} key={index}>
               {(isOpen && groupLabel) || isOpen === undefined ? (
                 <p className="text-sm font-medium text-muted-foreground px-4 pb-2 max-w-[248px] truncate">
                   {groupLabel}
@@ -62,24 +68,24 @@ export function Menu({ isOpen }: MenuProps) {
                                 (active === undefined &&
                                   pathname.startsWith(href)) ||
                                 active
-                                  ? "secondary"
-                                  : "ghost"
+                                  ? 'secondary'
+                                  : 'ghost'
                               }
                               className="w-full justify-start h-10 mb-1"
                               asChild
                             >
                               <Link href={href}>
                                 <span
-                                  className={cn(isOpen === false ? "" : "mr-4")}
+                                  className={cn(isOpen === false ? '' : 'mr-4')}
                                 >
                                   <Icon size={18} />
                                 </span>
                                 <p
                                   className={cn(
-                                    "max-w-[200px] truncate",
+                                    'max-w-[200px] truncate',
                                     isOpen === false
-                                      ? "-translate-x-96 opacity-0"
-                                      : "translate-x-0 opacity-100"
+                                      ? '-translate-x-96 opacity-0'
+                                      : 'translate-x-0 opacity-100'
                                   )}
                                 >
                                   {label}
@@ -117,26 +123,10 @@ export function Menu({ isOpen }: MenuProps) {
             <TooltipProvider disableHoverableContent>
               <Tooltip delayDuration={100}>
                 <TooltipTrigger asChild>
-                  <Button
-                    onClick={() => {}}
-                    variant="outline"
-                    className="w-full justify-center h-10 mt-5"
-                  >
-                    <span className={cn(isOpen === false ? "" : "mr-4")}>
-                      <LogOut size={18} />
-                    </span>
-                    <p
-                      className={cn(
-                        "whitespace-nowrap",
-                        isOpen === false ? "opacity-0 hidden" : "opacity-100"
-                      )}
-                    >
-                      Sign out
-                    </p>
-                  </Button>
+                  <LogOutButton user={user} manager={manager} isOpen={isOpen} />
                 </TooltipTrigger>
                 {isOpen === false && (
-                  <TooltipContent side="right">Sign out</TooltipContent>
+                  <TooltipContent side="right">Cerrar sesión</TooltipContent>
                 )}
               </Tooltip>
             </TooltipProvider>
@@ -146,3 +136,40 @@ export function Menu({ isOpen }: MenuProps) {
     </ScrollArea>
   );
 }
+
+const LogOutButton = ({
+  user,
+  isOpen,
+  manager,
+}: {
+  user: User | null;
+  manager: Manager | null;
+  isOpen?: boolean;
+}) => {
+  if (user || manager) {
+    const supabase = createClient();
+    const router = useRouter();
+    return (
+      <Button
+        onClick={async () => {
+          await supabase.auth.signOut();
+          router.push(getURL('/sign-in'));
+        }}
+        variant="outline"
+        className="w-full justify-center h-10 mt-5"
+      >
+        <span className={cn(isOpen === false ? '' : 'mr-4')}>
+          <LogOut size={18} />
+        </span>
+        <p
+          className={cn(
+            'whitespace-nowrap',
+            isOpen === false ? 'opacity-0 hidden' : 'opacity-100'
+          )}
+        >
+          Sign out
+        </p>
+      </Button>
+    );
+  }
+};

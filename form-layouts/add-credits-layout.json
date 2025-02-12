@@ -1,0 +1,17 @@
+[
+  {
+    "fields": [
+      {
+        "name": "credits",
+        "selectOptionsTitle": "Planes",
+        "fieldType": "Select",
+        "type": "select",
+        "placeholder": "Selecciona un plan",
+        "label": "Selecciona un plan para asignar",
+        "required": true,
+        "icon": "Coins",
+        "options": "credits"
+      }
+    ]
+  }
+]

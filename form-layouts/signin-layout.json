@@ -1,0 +1,24 @@
+[
+  {
+    "fields": [
+      {
+        "type": "email",
+        "class": "w-full",
+        "name": "email",
+        "placeholder": "you@example.com",
+        "icon": "email",
+        "label": "Email",
+        "required": true
+      },
+      {
+        "type": "password",
+        "class": "w-full",
+        "name": "password",
+        "icon": "lock",
+        "placeholder": "********",
+        "label": "Password",
+        "required": true
+      }
+    ]
+  }
+]

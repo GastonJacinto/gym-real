@@ -1,0 +1,73 @@
+[
+  {
+    "fields": [
+      {
+        "type": "email",
+        "class": "w-full",
+        "name": "email",
+        "placeholder": "you@example.com",
+        "icon": "email",
+        "label": "Email",
+        "required": true
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "password",
+        "class": "w-full",
+        "name": "password",
+        "icon": "lock",
+        "placeholder": "********",
+        "label": "Password",
+        "required": true
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "text",
+        "class": "w-full",
+        "name": "first_name",
+        "icon": "user",
+        "placeholder": "John",
+        "label": "Nombre",
+        "required": true
+      },
+      {
+        "type": "text",
+        "class": "w-full",
+        "name": "last_name",
+        "icon": "user",
+        "placeholder": "Doe",
+        "label": "Apellido",
+        "required": true
+      }
+    ]
+  },
+  {
+    "fields": [
+      {
+        "type": "phone",
+        "class": "w-full",
+        "icon": "phone",
+        "name": "phone",
+        "placeholder": "1234567890",
+        "label": "Celular",
+        "required": true
+      },
+      {
+        "type": "number",
+        "icon": "id-card",
+        "class": "w-full",
+        "name": "dni",
+        "help": "(Sin puntos ni guiones)",
+        "placeholder": "11444777",
+        "label": "D.N.I",
+        "required": true
+      }
+    ]
+  }
+]

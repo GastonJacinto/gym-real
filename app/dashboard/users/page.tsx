@@ -21,7 +21,7 @@ import { CustomModal } from '@/components/shared/custom-modal';
 import { User } from '@/types/db-types';
 import { deleteUserFn } from '@/lib/functions/dashboard/functions';
 import { toast } from '@/hooks/use-toast';
-import { ToastAction } from '@/components/ui/toast';
+import { AddUserCreditsModal } from '@/components/ui/dashboard/add-user-credits-modal';
 const columns: Column[] = [
   { key: 'name', label: 'Usuario', type: 'avatar' },
   { key: 'role', label: 'Rol' },
@@ -37,8 +37,7 @@ const handleUpdate = () => {
 export default function UsersPage() {
   //Global States
   const users = useUserStore((state) => state.users);
-  const mappedData = mapDataToColumns(users, columns);
-  const removeUser = useUserStore((state) => state.removeUser);
+  const removeUserFromList = useUserStore((state) => state.removeUserFromList);
   //Local States
   const [selectedUser, setSelectedUser] = React.useState<MappedData | null>(
     null
@@ -88,11 +87,12 @@ export default function UsersPage() {
       });
       return;
     }
+    removeUserFromList(selectedUser.data.id);
+    setSelectedUser(null);
     toast({
       variant: 'default',
       title: 'Usuario eliminado correctamente',
     });
-    removeUser(selectedUser.data.id);
   };
   return (
     <ContentLayout title="Usuarios">
@@ -103,10 +103,11 @@ export default function UsersPage() {
         <ReusableTable
           title="Usuarios"
           columns={columns}
-          data={mappedData}
+          data={mapDataToColumns(users, columns)}
           actions={actions}
           onUpdate={handleUpdate}
         />
+
         <CustomModal
           open={isDeleteModalOpen}
           onOpenChange={setIsDeleteModalOpen}
@@ -118,16 +119,10 @@ export default function UsersPage() {
           confirmText="Eliminar"
           cancelText="Cancelar"
         />
-        <CustomModal
-          open={isEditModalOpen}
+        <AddUserCreditsModal
           onOpenChange={setIsEditModalOpen}
-          title="¿Estás seguro?"
-          description="Esta acción no se puede deshacer."
-          confirmFn={handleDeleteUser}
-          variant="success"
-          icon={<Trash2 className="h-6 w-6" />}
-          confirmText="Eliminar"
-          cancelText="Cancelar"
+          isOpen={isEditModalOpen}
+          user={selectedUser?.data}
         />
       </div>
     </ContentLayout>

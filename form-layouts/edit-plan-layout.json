@@ -11,19 +11,28 @@
           "required": true
         },
         {
-          "name": "price",
+          "name": "credits",
           "type": "number",
-          "icon": "DollarSign",
+          "icon": "Coins",
           "fieldType": "Input",
 
-          "placeholder": "Precio del plan",
-          "label": "Precio",
+          "placeholder": "Creditos del plan",
+          "label": "Creditos del plan",
           "required": true
         }
       ],
       {
-        "name": "description",
+        "name": "price",
+        "type": "number",
         "icon": "DollarSign",
+        "fieldType": "Input",
+
+        "placeholder": "Precio del plan",
+        "label": "Precio",
+        "required": true
+      },
+      {
+        "name": "description",
         "fieldType": "Input",
         "type": "text",
         "placeholder": "Descripción del plan",
@@ -32,13 +41,14 @@
       }
     ]
   },
+
   {
     "fields": [
       {
         "name": "features",
         "type": "features",
-        "placeholder": "",
-        "label": "Características del plan",
+        "placeholder": "Caracteristicas del plan",
+        "label": "Caracteristicas del plan",
         "required": true
       }
     ]

@@ -3,7 +3,7 @@ import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 import { Metadata } from 'next';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { Manager, Plan, User, UserWithProfile } from '@/types/db-types';
+import { Manager, User } from '@/types/db-types';
 import { myManagerId } from '@/constants';
 import { cookies } from 'next/headers';
 import AdminPanelLayout from '@/components/admin-panel/admin-panel-layout';
@@ -27,25 +27,13 @@ export default async function DashboardLayout({
     return redirect('/sign-in');
   }
 
-  const { data: managerData } = await supabase
-    .from('managers')
-    .select()
-    .eq('id', myManagerId)
-    .single();
-  const { data: usersData } = await supabase
+  const { data: userData } = await supabase
     .from('users')
-    .select('*, profiles(*)');
-  const { data: planData } = await supabase
-    .from('plans')
-    .select()
-    .order('price', { ascending: true });
-  return (
-    <AdminPanelLayout
-      managerData={managerData as Manager}
-      usersData={usersData as UserWithProfile[]}
-      planData={planData as Plan[]}
-    >
-      {children}
-    </AdminPanelLayout>
-  );
+    .select('*, profiles(*)')
+    .eq('id', user.id)
+    .single();
+  if (!userData) {
+    return redirect('/sign-in');
+  }
+  return <AdminPanelLayout userData={userData}>{children}</AdminPanelLayout>;
 }

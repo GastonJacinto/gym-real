@@ -1,7 +1,6 @@
 'use server';
 import { MappedData } from '@/utils/helpers';
 import { createClient } from '@/utils/supabase/server';
-import dayjs from 'dayjs';
 
 export const deleteUserFn = async ({ user }: { user: MappedData }) => {
   const supabase = await createClient();

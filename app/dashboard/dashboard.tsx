@@ -24,7 +24,7 @@ import { useSidebar } from '@/hooks/use-sidebar';
 import { useStore } from '@/hooks/use-store';
 import { useManagerStore } from '@/stores/manager-store';
 import { useUserStore } from '@/stores/user-store';
-import { Manager, User } from '@/types/db-types';
+import { Manager, Plan, User, UserWithProfile } from '@/types/db-types';
 import { Label } from '@radix-ui/react-label';
 import { Activity, DollarSign, Users, Dumbbell } from 'lucide-react';
 import Link from 'next/link';
@@ -63,16 +63,18 @@ export default function GeneralDashboard({
   usersData,
 }: {
   managerData: Manager;
-  usersData: User[] | null;
+  usersData: UserWithProfile[] | null;
+  planData: Plan[] | null;
 }) {
   const setManager = useManagerStore((state) => state.setManager);
   const setUsers = useUserStore((state) => state.setUsers);
 
   const users = useUserStore((state) => state.users);
+  const manager = useManagerStore((state) => state.manager);
   React.useEffect(() => {
-    if (managerData) setManager(managerData);
-    if (usersData) setUsers(usersData);
-  }, [managerData, usersData, setManager, setUsers]);
+    if (managerData && !manager) setManager(managerData);
+    if (usersData && !users?.length) setUsers(usersData);
+  }, [managerData, usersData]);
   const data = [
     {
       title: 'Usuarios',

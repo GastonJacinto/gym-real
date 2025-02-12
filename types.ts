@@ -12,36 +12,37 @@ export type Database = {
       managers: {
         Row: {
           created_at: string;
-          email: string | null;
-          first_name: string | null;
+          email: string;
+          first_name: string;
           id: string;
-          last_name: string | null;
-          phone: string | null;
-          role: Database['public']['Enums']['ROLE'] | null;
+          last_name: string;
+          phone: string;
+          role: Database['public']['Enums']['ROLE'];
         };
         Insert: {
           created_at?: string;
-          email?: string | null;
-          first_name?: string | null;
+          email: string;
+          first_name: string;
           id?: string;
-          last_name?: string | null;
-          phone?: string | null;
-          role?: Database['public']['Enums']['ROLE'] | null;
+          last_name: string;
+          phone: string;
+          role?: Database['public']['Enums']['ROLE'];
         };
         Update: {
           created_at?: string;
-          email?: string | null;
-          first_name?: string | null;
+          email?: string;
+          first_name?: string;
           id?: string;
-          last_name?: string | null;
-          phone?: string | null;
-          role?: Database['public']['Enums']['ROLE'] | null;
+          last_name?: string;
+          phone?: string;
+          role?: Database['public']['Enums']['ROLE'];
         };
         Relationships: [];
       };
       plans: {
         Row: {
           created_at: string;
+          credits: number;
           description: string;
           features: string[];
           id: string;
@@ -52,21 +53,23 @@ export type Database = {
         };
         Insert: {
           created_at?: string;
+          credits?: number;
           description?: string;
-          features?: string;
+          features?: string[];
           id?: string;
           price?: number;
-          title?: string | null;
+          title: string;
           updated_at?: string | null;
           updated_by?: string | null;
         };
         Update: {
           created_at?: string;
+          credits?: number;
           description?: string;
-          features?: string;
+          features?: string[];
           id?: string;
           price?: number;
-          title?: string | null;
+          title?: string;
           updated_at?: string | null;
           updated_by?: string | null;
         };
@@ -84,21 +87,21 @@ export type Database = {
         Row: {
           avatar_url: string | null;
           created_at: string;
-          credits: number | null;
+          credits: number;
           id: string;
           user_id: string;
         };
         Insert: {
           avatar_url?: string | null;
           created_at?: string;
-          credits?: number | null;
+          credits?: number;
           id?: string;
           user_id?: string;
         };
         Update: {
           avatar_url?: string | null;
           created_at?: string;
-          credits?: number | null;
+          credits?: number;
           id?: string;
           user_id?: string;
         };
@@ -117,12 +120,12 @@ export type Database = {
           created_at: string;
           deleted: boolean;
           deleted_at: string | null;
-          dni: number | null;
-          email: string | null;
-          first_name: string | null;
+          dni: number;
+          email: string;
+          first_name: string;
           id: string;
-          last_name: string | null;
-          phone: string | null;
+          last_name: string;
+          phone: string;
           role: Database['public']['Enums']['ROLE'];
           updated_at: string | null;
         };
@@ -130,12 +133,12 @@ export type Database = {
           created_at?: string;
           deleted?: boolean;
           deleted_at?: string | null;
-          dni?: number | null;
-          email?: string | null;
-          first_name?: string | null;
+          dni: number;
+          email: string;
+          first_name: string;
           id?: string;
-          last_name?: string | null;
-          phone?: string | null;
+          last_name: string;
+          phone: string;
           role?: Database['public']['Enums']['ROLE'];
           updated_at?: string | null;
         };
@@ -143,12 +146,12 @@ export type Database = {
           created_at?: string;
           deleted?: boolean;
           deleted_at?: string | null;
-          dni?: number | null;
-          email?: string | null;
-          first_name?: string | null;
+          dni?: number;
+          email?: string;
+          first_name?: string;
           id?: string;
-          last_name?: string | null;
-          phone?: string | null;
+          last_name?: string;
+          phone?: string;
           role?: Database['public']['Enums']['ROLE'];
           updated_at?: string | null;
         };

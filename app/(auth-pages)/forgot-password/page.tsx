@@ -1,37 +1,50 @@
-import { forgotPasswordAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
-import { SubmitButton } from "@/components/submit-button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
-import { SmtpMessage } from "../smtp-message";
+'use client';
 
-export default async function ForgotPassword(props: {
-  searchParams: Promise<Message>;
-}) {
-  const searchParams = await props.searchParams;
+import AuthForm from '@/components/ui/auth/auth-form';
+import { handleRequestFn } from '@/utils/auth-helpers/client';
+import { getURL } from '@/utils/helpers';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import forgot_password_layout from '@/form-layouts/forgot-password-layout.json';
+import { requestPasswordUpdate, signUp } from '@/utils/auth-helpers/server';
+import Link from 'next/link';
+interface ForgotPasswordProps {
+  allowEmail: boolean;
+  redirectMethod: string;
+}
+export default function ForgotPassword({
+  allowEmail,
+  redirectMethod,
+}: ForgotPasswordProps) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = redirectMethod === 'client' ? useRouter() : null;
+
+  const handleSubmit = async (formData: FormData) => {
+    setIsSubmitting(true); // Disable the button while the request is being handled
+    await handleRequestFn(formData, requestPasswordUpdate, router);
+    setIsSubmitting(false);
+  };
   return (
     <>
-      <form className="flex-1 flex flex-col w-full gap-2 text-foreground [&>input]:mb-6 min-w-64 max-w-64 mx-auto">
-        <div>
-          <h1 className="text-2xl font-medium">Reset Password</h1>
-          <p className="text-sm text-secondary-foreground">
-            Already have an account?{" "}
-            <Link className="text-primary underline" href="/sign-in">
-              Sign in
+      <>
+        <div className="space-y-4">
+          <AuthForm
+            layout={forgot_password_layout}
+            saveFn={() => {}}
+            submitButton={'Reiniciar contraseña'}
+            completeFn={handleSubmit}
+            base={{}}
+            lang="en"
+          />
+          <div className="divider ">o</div>
+          <h3 className="font-semibold text-xs text-center">
+            Ya tienes una cuenta?{' '}
+            <Link className="text-blue-500" href={getURL('/sign-in')}>
+              Iniciar sesión
             </Link>
-          </p>
+          </h3>
         </div>
-        <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
-          <Label htmlFor="email">Email</Label>
-          <Input name="email" placeholder="you@example.com" required />
-          <SubmitButton formAction={forgotPasswordAction}>
-            Reset Password
-          </SubmitButton>
-          <FormMessage message={searchParams} />
-        </div>
-      </form>
-      <SmtpMessage />
+      </>
     </>
   );
 }

@@ -1,13 +1,8 @@
 'use client';
 
-import * as z from 'zod';
 import React, { useState, useCallback } from 'react';
-import { useForm, UseFormReturn } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import { serverAction } from './actions/server-action';
 import { Button } from '@/components/ui/button';
-import { Form } from '@/components/ui/form';
 import { Progress } from '@/components/ui/progress';
 import { DynamicField } from './components';
 import {
@@ -15,83 +10,140 @@ import {
   UseFormStepsProps,
   UseMultiFormStepsReturn,
 } from '@/types/form-types';
-import { ActionResponse } from './form-schemas';
+import { getInitialValues } from './functions';
+import { Formik, FormikErrors, FormikTouched } from 'formik';
+import { toast } from '@/hooks/use-toast';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { PaperPlaneIcon } from '@radix-ui/react-icons';
+import IsSubmitting from './is-submitting';
 
 export function DraftForm({
   layout,
   base,
-  schema,
+  onSaveFn,
+  onCompleteFn,
+  afterCompleteFn,
+  ...props
 }: {
   layout: LayoutType;
   base: {};
-  schema: z.ZodSchema;
+  onSaveFn?: (formData: FormData) => Promise<string>;
+  onCompleteFn: (formData: FormData) => Promise<string>;
+  afterCompleteFn?: (values: any) => Promise<void>;
+  [key: string]: any;
 }) {
-  const form = useForm<z.infer<typeof schema>>({
-    mode: 'onBlur', // Validate on touch
-    resolver: zodResolver(schema),
-    defaultValues: {
-      ...base,
+  const [values, setValues] = React.useState(base);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const steps = layout;
+
+  const { currentStep, isLastStep, goToNext, goToPrevious } = useMultiStepForm({
+    initialSteps: steps,
+    onStepValidation: async () => {
+      return true;
     },
   });
-  const initialState = {
-    success: false,
-    message: '',
-    schema,
-  };
-  const [state, action, isPending] = React.useActionState(
-    serverAction,
-    initialState
-  );
   return (
     <div>
-      <Form {...form}>
-        <form
-          action={action}
-          className="flex flex-col p-2 md:p-5 w-full mx-auto rounded-md max-w-3xl  border"
-        >
-          <MultiStepViewer
-            schema={schema}
-            form={form}
-            state={state}
-            isPending={isPending}
-            layout={layout}
-          />
-        </form>
-      </Form>
+      <Formik
+        onSubmit={async (newValues, actions) => {
+          setIsSubmitting(true);
+          setValues((prevValues: any) => ({
+            ...prevValues,
+            ...newValues,
+          }));
+          const updatedValues = { ...values, ...newValues };
+          const formData = new FormData();
+          formData.append('values', JSON.stringify(updatedValues));
+          formData.append('page', currentStep.toString());
+
+          if (props?.additional_info) {
+            formData.append(
+              'additional_info',
+              JSON.stringify(props?.additional_info)
+            );
+          }
+          Object.keys(updatedValues).forEach((key) => {
+            const fieldValue = updatedValues[key];
+            if (Array.isArray(fieldValue)) {
+              fieldValue.forEach((fileObj, index) => {
+                if (fileObj && fileObj instanceof File) {
+                  formData.append(`${key}[${index}]`, fileObj);
+                }
+              });
+            } else if (fieldValue && fieldValue instanceof File) {
+              formData.append(key, fieldValue);
+            }
+          });
+          try {
+            if (onSaveFn) await onSaveFn(formData);
+            if (isLastStep) {
+              const response = await onCompleteFn(formData);
+              if (afterCompleteFn) await afterCompleteFn(updatedValues);
+              if (response && typeof response == 'string') {
+                toast({
+                  title: 'Success',
+                  description: response,
+                });
+              }
+            } else {
+              goToNext();
+            }
+          } catch (error: any) {
+            toast({
+              title: 'Error',
+              description: error?.message,
+              variant: 'destructive',
+            });
+            return;
+          } finally {
+            actions.setSubmitting(false);
+            setIsSubmitting(false);
+          }
+        }}
+        initialValues={getInitialValues(layout, values)}
+        enableReinitialize={false}
+      >
+        {({ handleSubmit, values, errors, touched }) => (
+          <form onSubmit={handleSubmit}>
+            <MultiStepViewer
+              currentStep={currentStep}
+              isLastStep={isLastStep}
+              goToPrevious={goToPrevious}
+              steps={steps}
+              errors={errors}
+              touched={touched}
+              isSubmitting={isSubmitting}
+              values={values}
+              layout={layout}
+            />
+          </form>
+        )}
+      </Formik>
     </div>
   );
 }
 
 export function MultiStepViewer({
-  form,
   layout,
-
-  schema,
-  state,
-  isPending,
+  values,
+  isSubmitting,
+  touched,
+  errors,
+  currentStep,
+  isLastStep,
+  goToPrevious,
+  steps,
 }: {
-  form: UseFormReturn<z.infer<typeof schema>>;
+  values: any;
   layout: LayoutType;
-  schema: z.ZodSchema;
-  state: ActionResponse | null;
-  isPending: boolean;
+  isSubmitting: boolean;
+  errors: FormikErrors<any>;
+  touched: FormikTouched<any>;
+  currentStep: number;
+  isLastStep: boolean;
+  steps: LayoutType;
+  goToPrevious: () => void;
 }) {
-  const steps = layout;
-  const { currentStep, isLastStep, goToNext, goToPrevious } = useMultiStepForm({
-    initialSteps: steps,
-    onStepValidation: async () =>
-      await validateCurrentStep({
-        steps,
-        currentStep,
-        form,
-      }),
-  });
-
-  const {
-    formState: { isSubmitting },
-    watch,
-  } = form;
-  const values = watch();
   const title = steps[currentStep - 1]?.title;
   return (
     <div className="flex flex-col gap-2 ">
@@ -111,37 +163,41 @@ export function MultiStepViewer({
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -15 }}
           transition={{ duration: 0.4, type: 'spring' }}
-          className="flex flex-col gap-0 "
+          className="flex flex-col gap-2 "
         >
           {title && <h2 className="text-2xl font-bold">{title}</h2>}
           {steps[currentStep - 1].fields.map((field, index) => (
             <DynamicField
+              errors={errors}
+              touched={touched}
               values={values}
               key={`field-${index}`}
-              form={form}
               field={field}
             />
           ))}
         </motion.div>
       </AnimatePresence>
-      {state?.message && <p> {state.message}</p>}
+
       <div className="flex flex-row justify-between gap-3 w-full pt-3">
-        <Button size="sm" variant="ghost" onClick={goToPrevious} type="button">
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={goToPrevious}
+          type="button"
+        >
+          <ChevronLeft className="mr-2 h-4 w-4" />
           Anterior
         </Button>
         {isLastStep && (
-          <Button size="sm" type="submit">
-            {isPending ? 'Espera...' : 'Confirmar'}
-          </Button>
+          <IsSubmitting isSubmitting={isSubmitting}>
+            Confirmar
+            <PaperPlaneIcon className="mr-2 h-4 w-4" />
+          </IsSubmitting>
         )}
         {!isLastStep && (
-          <Button
-            size="sm"
-            type="button"
-            variant="secondary"
-            onClick={goToNext}
-          >
+          <Button size="sm" type="submit" variant="secondary">
             Siguiente
+            <ChevronRight className="mr-2 h-4 w-4" />
           </Button>
         )}
       </div>
@@ -190,19 +246,22 @@ export function useMultiStepForm({
 async function validateCurrentStep({
   steps,
   currentStep,
-  form,
+  errors,
 }: {
   steps: LayoutType;
+  errors: FormikErrors<any>;
   currentStep: number;
-  form: UseFormReturn<any>;
 }) {
-  const step = steps[currentStep - 1]; // Obtén el paso actual
+  const step = steps[currentStep - 1]; // Obtiene el paso actual
 
-  // Aplanar los nombres de los campos en caso de que haya campos agrupados (arrays)
-  const stepFieldNames = step.fields.flatMap((field) => {
-    return Array.isArray(field) ? field.map((f) => f.name) : field.name;
-  });
-  // Ejecuta trigger para validar solo los campos de este paso
-  const isValid = await form.trigger(stepFieldNames);
-  return isValid;
+  const stepFieldNames = step.fields.flatMap((field) =>
+    Array.isArray(field) ? field.map((f) => f.name) : field.name
+  );
+
+  // Filtra los errores solo de los campos del paso actual
+  const stepErrors = Object.keys(errors).filter((key) =>
+    stepFieldNames.includes(key)
+  );
+
+  return stepErrors.length === 0;
 }

@@ -12,18 +12,19 @@ import { usePlanStore } from '@/stores/plans-store';
 import { Plan } from '@/types/db-types';
 import React from 'react';
 import { EditPlanModal } from './dashboard/edit-plan-modal';
-
 const iconMap = {
-  Básico: <Dumbbell />,
-  Intermedio: <Zap />,
-  Elite: <Trophy />,
+  0: <Dumbbell />,
+  1: <Zap />,
+  2: <Trophy />,
 };
 export default function PricingCard({
   plan,
   allowEdit,
+  index,
 }: {
   plan: Plan;
   allowEdit: boolean;
+  index: number;
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
   return (
@@ -33,11 +34,10 @@ export default function PricingCard({
     >
       <CardHeader>
         <div className="flex justify-center mb-4">
-          {iconMap[plan.title as keyof typeof iconMap] &&
-            React.cloneElement(iconMap[plan.title as keyof typeof iconMap], {
+          {iconMap[index as keyof typeof iconMap] &&
+            React.cloneElement(iconMap[index as keyof typeof iconMap], {
               className: 'w-12 h-12 text-primary',
             })}
-          {/*  <plan.icon className="w-12 h-12 text-primary" />  */}
         </div>
         <CardTitle className="text-2xl font-bold text-center">
           {plan.title}
@@ -50,7 +50,7 @@ export default function PricingCard({
         <p className="text-4xl font-bold text-center mb-6 flex items-center w-full justify-center">
           <DollarSign className="w-8 h-8 text-primary" />
           {plan.price}
-          <span className="text-sm font-normal">/mes</span>
+          <span className="text-sm font-normal text-primary">/mes</span>
         </p>
         <ul className="space-y-2">
           {plan.features.map((feature, index) => (

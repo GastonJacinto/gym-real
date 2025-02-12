@@ -3,12 +3,7 @@ import { ContentLayout } from '@/components/admin-panel/content-layout';
 import CustomBreadcrum from '@/components/shared/custom-breadcrum';
 import PricingCards from '@/components/ui/pricing-card';
 import { PricingCardSkeleton } from '@/components/ui/skeletons/pricing-card-skeleton';
-import { useSidebar } from '@/hooks/use-sidebar';
-import { useStore } from '@/hooks/use-store';
-import { useManagerStore } from '@/stores/manager-store';
 import { usePlanStore } from '@/stores/plans-store';
-import { useUserStore } from '@/stores/user-store';
-import { Manager, User } from '@/types/db-types';
 import React from 'react';
 
 export default function PrincingDashboard({
@@ -36,8 +31,13 @@ export default function PrincingDashboard({
       />
       <div className="grid gap-x-4 grid-cols-1 gap-y-4 md:grid-cols-3 ">
         {plans.length > 0 || isHidrated
-          ? plans.map((plan) => (
-              <PricingCards key={plan.title} plan={plan} allowEdit />
+          ? plans.map((plan, index) => (
+              <PricingCards
+                key={plan.title}
+                index={index}
+                plan={plan}
+                allowEdit
+              />
             ))
           : Array.from({ length: 3 }).map((_, index) => (
               <PricingCardSkeleton key={index} />

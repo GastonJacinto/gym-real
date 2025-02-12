@@ -1,9 +1,10 @@
+import AuthFormLayout from '@/components/shared/wrappers/auth-form-wrapper';
+import { blackBikeUrl } from '@/public';
+
 export default async function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <div className="max-w-7xl flex flex-col gap-12 items-start">{children}</div>
-  );
+  return <AuthFormLayout bgImage={blackBikeUrl}>{children}</AuthFormLayout>;
 }

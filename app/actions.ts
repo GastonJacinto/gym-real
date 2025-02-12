@@ -4,6 +4,7 @@ import { encodedRedirect } from '@/utils/utils';
 import { createClient } from '@/utils/supabase/server';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { v4 } from 'uuid';
 
 export const signUpAction = async (formData: FormData) => {
   const email = formData.get('email')?.toString();
@@ -31,6 +32,8 @@ export const signUpAction = async (formData: FormData) => {
     console.error(error.code + ' ' + error.message);
     return encodedRedirect('error', '/sign-up', error.message);
   } else {
+    // const id = v4()
+    // const { error } = await supabase.from('users').insert({ id, email, password });
     return encodedRedirect(
       'success',
       '/sign-up',

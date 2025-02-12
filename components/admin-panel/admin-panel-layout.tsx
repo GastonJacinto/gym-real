@@ -6,24 +6,34 @@ import { useSidebar } from '@/hooks/use-sidebar';
 import { useStore } from '@/hooks/use-store';
 import { cn } from '@/lib/utils';
 import { useManagerStore } from '@/stores/manager-store';
+import { usePlanStore } from '@/stores/plans-store';
 import { useUserStore } from '@/stores/user-store';
-import { Manager, User } from '@/types/db-types';
+import { Manager, Plan, User, UserWithProfile } from '@/types/db-types';
 import React from 'react';
 
 export default function AdminPanelLayout({
   children,
   managerData,
   usersData,
+  userData,
+  planData,
 }: {
-  managerData: Manager;
-  usersData: User[] | null;
+  managerData?: Manager;
+  usersData?: UserWithProfile[];
+  userData?: UserWithProfile;
   children: React.ReactNode;
+  planData?: Plan[];
 }) {
+  //Setter functions
   const setManager = useManagerStore((state) => state.setManager);
   const setUsers = useUserStore((state) => state.setUsers);
-
+  const setUser = useUserStore((state) => state.setUser);
+  const setPlans = usePlanStore((state) => state.setPlans);
+  //Global states
   const users = useUserStore((state) => state.users);
   const manager = useManagerStore((state) => state.manager);
+  const user = useUserStore((state) => state.user);
+  const plans = usePlanStore((state) => state.plans);
   React.useEffect(() => {
     const initializeState = () => {
       if (!manager && managerData) {
@@ -32,9 +42,17 @@ export default function AdminPanelLayout({
       if (!users?.length && usersData) {
         setUsers(usersData);
       }
+      if (!user && userData) {
+        setUser(userData);
+      }
+      if (!plans?.length && planData) {
+        console.log(planData);
+
+        setPlans(planData);
+      }
     };
     initializeState();
-  }, [users, manager]);
+  }, []);
   const sidebar = useStore(useSidebar, (x) => x);
   if (!sidebar) return null;
   const { getOpenState, settings } = sidebar;
